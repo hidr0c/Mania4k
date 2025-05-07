@@ -103,6 +103,11 @@ public class Game extends JPanel implements KeyListener {
         return combo;
     }
 
+    public SoundManager getSoundManager() {
+        return soundManager;
+    }
+
+
     // Method to add points and update combo
     public void addScore(int points, boolean hit) {
         score += points;

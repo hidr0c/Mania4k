@@ -13,11 +13,7 @@ public class InputHandler {
         this.game = game;
     }
 
-    public void handleKeyPress(int e) {
-        int keyCode = e;
-        char keyChar = (char) e;
-        System.out.println("Key pressed: keyCode=" + keyCode + ", keyChar=" + keyChar);
-        // Vòng lặp xử lý như cũ
+    public void handleKeyPress(int keyCode) {
         for (int i = 0; i < keyBindings.length; i++) {
             if (keyCode == keyBindings[i]) {
                 game.getTracks()[i].setKeyPressed(true);
@@ -27,35 +23,47 @@ public class InputHandler {
         }
     }
 
-    public void handleKeyRelease(int keyCode) {
-        for (int i = 0; i < keyBindings.length; i++) {
-            if (keyCode == keyBindings[i]) {
-                game.getTracks()[i].setKeyPressed(false);
-                break;
-            }
-        }
-    }
-
     private void checkNoteHit(int trackIndex) {
         Track track = game.getTracks()[trackIndex];
         Note closestNote = track.getClosestNote();
 
-        if (closestNote != null) {
+        if (closestNote != null && !closestNote.isHit()) {
             double distance = Math.abs(closestNote.getYPosition() - 500); // 500 is hit position
 
             // Different scoring windows
             if (distance < 20) {
                 // Perfect hit
+                closestNote.setJudgment("perfect");
                 game.addScore(100, true);
                 track.removeNote(closestNote);
+                game.getSoundManager().playSound("answer");
+
             } else if (distance < 50) {
+                // Great hit
+                closestNote.setJudgment("great");
+                game.addScore(75, true);
+                track.removeNote(closestNote);
+                game.getSoundManager().playSound("answer");
+            } else if (distance < 100) {
                 // Good hit
+                closestNote.setJudgment("good");
                 game.addScore(50, true);
                 track.removeNote(closestNote);
-            } else if (distance < 100) {
+                game.getSoundManager().playSound("answer");
+            } else if (distance < 150) {
                 // OK hit
+                closestNote.setJudgment("ok");
                 game.addScore(25, true);
                 track.removeNote(closestNote);
+                game.getSoundManager().playSound("answer");
+            }
+        }
+    }
+    public void handleKeyRelease(int keyCode) {
+        for (int i = 0; i < keyBindings.length; i++) {
+            if (keyCode == keyBindings[i]) {
+                game.getTracks()[i].setKeyPressed(false);
+                break;
             }
         }
     }
