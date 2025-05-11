@@ -17,6 +17,7 @@ public class InputHandler {
         for (int i = 0; i < keyBindings.length; i++) {
             if (keyCode == keyBindings[i]) {
                 game.getTracks()[i].setKeyPressed(true);
+                long currentTime = game.getCurrentTime(); // Fetch the current game time
                 checkNoteHit(i);
                 break;
             }
@@ -28,7 +29,7 @@ public class InputHandler {
         Note closestNote = track.getClosestNote();
 
         if (closestNote != null && !closestNote.isHit()) {
-            double distance = Math.abs(closestNote.getYPosition() - 500); // 500 is hit position
+            double distance = Math.abs(closestNote.getYPosition(game.getCurrentTime()) - 500); // 500 is hit position
 
             // Different scoring windows
             if (distance < 20) {

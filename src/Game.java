@@ -8,6 +8,7 @@ public class Game extends JPanel implements KeyListener {
     private static final int GAME_HEIGHT = 600;
 
     private boolean running;
+    private long startTime;
     private Track[] tracks;
     private Renderer renderer;
     private InputHandler inputHandler;
@@ -29,36 +30,36 @@ public class Game extends JPanel implements KeyListener {
 
     private void init() {
         running = true;
-
         // Initialize components
         tracks = new Track[4];
         for (int i = 0; i < 4; i++) {
             tracks[i] = new Track(i);
         }
-
         renderer = new Renderer(this);
         inputHandler = new InputHandler(this);
         soundManager = new SoundManager();
-        beatmapLoader = new BeatmapLoader();
-        beatmapLoader.generateTestBeatmap(this);
-
-
+        // Initialize start time
+        startTime = System.currentTimeMillis();
         score = 0;
         combo = 0;
+        beatmapLoader = new BeatmapLoader();
+
     }
 
     public void gameLoop() {
+        Game game = new Game();
         final int FPS = 60;
         final long OPTIMAL_TIME = 1000000000 / FPS;
 
         long lastLoopTime = System.nanoTime();
 
         while (running) {
+            beatmapLoader.loadBeatmapWithFileChooser(game);
             long now = System.nanoTime();
             long updateLength = now - lastLoopTime;
             lastLoopTime = now;
 
-            double delta = updateLength / ((double) OPTIMAL_TIME);
+            long delta = updateLength / OPTIMAL_TIME;
 
             // Update game state
             update(delta);
@@ -76,8 +77,11 @@ public class Game extends JPanel implements KeyListener {
             }
         }
     }
+    public long getCurrentTime() {
+        return System.currentTimeMillis() - startTime;
+    }
 
-    private void update(double delta) {
+    private void update(long delta) {
         // Update notes and other game objects
         for (Track track : tracks) {
             track.update(delta);

@@ -11,6 +11,10 @@ public class BeatmapLoader {
 
     // Hàm để chọn và load một beatmap file
     public Beatmap loadBeatmapWithFileChooser(Game game) {
+        if (game == null) {
+            throw new IllegalArgumentException("Game instance cannot be null when loading beatmaps.");
+        }
+
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Select Beatmap File");
         fileChooser.setFileFilter(new FileNameExtensionFilter("Beatmap Files", "txt", "json", "osu"));
@@ -25,6 +29,9 @@ public class BeatmapLoader {
 
     // Load beatmap from a file
     public Beatmap loadBeatmap(String filename, Game game) {
+        if (game == null) {
+            throw new IllegalArgumentException("Game instance cannot be null when loading beatmaps.");
+        }
         Beatmap beatmap = new Beatmap();
 
         try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
@@ -84,18 +91,31 @@ public class BeatmapLoader {
 
                 // Process notes
                 if (inNotesSection) {
-                    // Format: timestamp,track
+                    // Format: x,y,time,type,hitSound,[endTime or extras]
                     String[] parts = line.split(",");
-                    if (parts.length == 2) {
+
+                    if (parts.length >= 5) { // Ensure the minimum expected fields are present
                         try {
-                            long timestamp = Long.parseLong(parts[0]);
-                            int trackIndex = Integer.parseInt(parts[1]);
+                            int x = Integer.parseInt(parts[0]); // x-coordinate (for osu!mania column)
+                            int y = Integer.parseInt(parts[1]); // y-coordinate (not used, always 192)
+                            long timestamp = Long.parseLong(parts[2]); // Time the note appears
+                            int type = Integer.parseInt(parts[3]); // Note type: 1 = single, 128 = hold
+                            long endTime = 0; // Default endTime for single notes
 
-                            beatmap.addNote(timestamp, trackIndex);
+                            // If it's a hold note, extract the endTime field (6th parameter)
+                            if (type == 128 && parts.length >= 6) {
+                                endTime = Long.parseLong(parts[5].split(":")[0]); // Parse endTime
+                            }
+                            int trackIndex = Math.min(x / 128, 3);  // Assume 4 tracks (0-3 for 4K)
 
-                            // Also add to the game's tracks if game is provided
-                            if (game != null && trackIndex >= 0 && trackIndex < 4) {
-                                Note note = new Note(timestamp);
+
+                            // Add note to beatmap
+                            Note note = new Note(timestamp, x, type, endTime, game, trackIndex);  // Pass the Game instance
+                            beatmap.addNote(note);
+
+
+                            // Also add to game's tracks if applicable
+                            if (x >= 0 && x < 512) {
                                 game.getTracks()[trackIndex].addNote(note);
                             }
                         } catch (NumberFormatException e) {
@@ -106,51 +126,15 @@ public class BeatmapLoader {
             }
 
             // Load audio file if exists
-            if (beatmap.getAudioFilePath() != null && game != null) {
+            if (beatmap.getAudioFilePath() != null) {
                 game.getSoundManager().playMusic(beatmap.getAudioFilePath());
             }
 
         } catch (IOException e) {
+            System.err.println("Error reading file: " + filename);
             e.printStackTrace();
         }
 
         return beatmap;
-    }
-
-    // A simple method to generate a test beatmap
-    public void generateTestBeatmap(Game game) {
-        // Add some test notes to each track
-        for (int i = 0; i < 20; i++) {
-            for (int track = 0; track < 4; track++) {
-                if (Math.random() > 0.5) { // 50% chance to add a note
-                    Note note = new Note(1000 + i * 500);
-                    game.getTracks()[track].addNote(note);
-                }
-            }
-        }
-    }
-
-    // Create a sample beatmap file
-    public void createSampleBeatmapFile(String filename) {
-        try (java.io.PrintWriter writer = new java.io.PrintWriter(filename)) {
-            writer.println("[Metadata]");
-            writer.println("Title: Sample Beatmap");
-            writer.println("Artist: Unknown");
-            writer.println("Creator: BeatmapLoader");
-            writer.println("AudioFile: assets/music/sample.wav");
-            writer.println("BPM: 120");
-            writer.println("");
-            writer.println("[Notes]");
-
-            // Generate some sample notes
-            for (int i = 0; i < 40; i++) {
-                long timestamp = 1000 + i * 500;
-                int track = (int) (Math.random() * 4);
-                writer.println(timestamp + "," + track);
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 }

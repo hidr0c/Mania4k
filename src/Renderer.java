@@ -1,6 +1,8 @@
 import java.awt.*;
+import java.util.List;
 
-public class Renderer {
+public class Renderer
+{
     private Game game;
 
     private static final int TRACK_WIDTH = 80;
@@ -11,7 +13,8 @@ public class Renderer {
         this.game = game;
     }
 
-    public void render(Graphics g) {
+    public void render(Graphics g)
+    {
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
@@ -51,9 +54,54 @@ public class Renderer {
         g.drawString("Combo: " + game.getCombo(), 10, 60);
     }
 
-    private void drawNote(Graphics g, Note note, int trackX) {
-        int noteY = (int) note.getYPosition();
+    public Note findClosestNote(long currentTime, List<Note> notes) {
+        // Use iterator to safely remove off-screen notes
+        notes.removeIf(note -> note.getYPosition(currentTime) > 600);
 
+        // If there are no remaining notes, return null
+        if (notes.isEmpty()) {
+            return null;
+        }
+
+        // Find the closest note to the "hit position" (Y = 500)
+        Note closest = null;
+        double minDistance = Double.MAX_VALUE;
+
+        for (Note note : notes) {
+            double distance = Math.abs(note.getYPosition(currentTime) - 500); // Y = 500 is the hit position
+            if (distance < minDistance) {
+                minDistance = distance;
+                closest = note;
+            }
+        }
+
+        return closest; // Return the closest note
+    }
+
+    private void drawNote(Graphics g, Note note, int trackX)
+    {
+        long currentTime = game.getCurrentTime(); // Get the current game time
+        int noteY = (int) note.getYPosition(currentTime);
+        // Set color based on whether it's a normal note or a hold note
+        if (note.isHoldNote()) {
+            int holdEndY = note.getHoldEndPosition(currentTime); // Get the end Y position for the hold note
+
+            // Render hold note as a vertical bar
+            g.setColor(new Color(255, 200, 0)); // Orange for hold notes
+            g.fillRect(trackX, Math.min(noteY, holdEndY), TRACK_WIDTH, Math.abs(holdEndY - noteY));
+
+            // Outline for the hold note
+            g.setColor(Color.BLACK);
+            g.drawRect(trackX, Math.min(noteY, holdEndY), TRACK_WIDTH, Math.abs(holdEndY - noteY));
+        } else {
+            // Render normal note as a rectangle
+            g.setColor(Color.YELLOW); // Yellow for normal notes
+            g.fillRect(trackX, noteY - 10, TRACK_WIDTH, 20);
+
+            // Outline for the normal note
+            g.setColor(Color.BLACK);
+            g.drawRect(trackX, noteY - 10, TRACK_WIDTH, 20);
+        }
         g.setColor(Color.YELLOW);
         g.fillRect(trackX, noteY - 10, TRACK_WIDTH, 20);
 

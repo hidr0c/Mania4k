@@ -64,10 +64,11 @@ public class Beatmap {
     }
 
     // Method for adding a note with timestamp and track index
-    public void addNote(long timestamp, int trackIndex) {
-        Note note = new Note(timestamp);
+    public void addNote(long timestamp, int x, int type, long endTime, Game game, int trackIndex) {
+        Note note = new Note(timestamp, x, type, endTime, game, trackIndex);
         notes.add(note);
     }
+
 
     // Original method for adding a note object directly
     public void addNote(Note note) {

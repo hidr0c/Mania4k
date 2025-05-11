@@ -22,8 +22,8 @@ public class BeatmapGameplayPanel extends JPanel implements KeyListener {
 
     public BeatmapGameplayPanel() {
         noteTimings = new ArrayList<>();
-        loadBeatmap("assets/beatmaps/sample.txt");
-
+        BeatmapLoader beatmapLoader = new BeatmapLoader();
+        beatmapLoader.loadBeatmapWithFileChooser(new Game());
         addKeyListener(this);
         setFocusable(true);
         requestFocusInWindow();
@@ -46,23 +46,6 @@ public class BeatmapGameplayPanel extends JPanel implements KeyListener {
             repaint();
         });
         timer.start();
-    }
-
-    // Load beatmap notes from a file. Each line should contain a number (time in ms)
-    private void loadBeatmap(String filePath) {
-        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                try {
-                    int noteTime = Integer.parseInt(line.trim());
-                    noteTimings.add(noteTime);
-                } catch (NumberFormatException e) {
-                    System.out.println("Invalid note time in beatmap: " + line);
-                }
-            }
-        } catch (IOException e) {
-            System.out.println("Error loading beatmap: " + e.getMessage());
-        }
     }
 
     @Override
