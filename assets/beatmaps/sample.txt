@@ -9,7 +9,7 @@ Source:東方Project
 Tags:touhou 12 speedcore marathon kurokoutei sayaka- nue houjuu Heian Alien ZUN 東方星蓮船 ～ Undefined Fantastic Object extra stage boss theme
 BeatmapID:992512
 BeatmapSetID:400078
-
+AudioFile: D:/Code Projects/Mania 4k/assets/music/song.mp3
 [Notes]
 448,192,13,5,0,0:0:0:0:
 64,192,124,1,0,0:0:0:0:
