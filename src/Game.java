@@ -13,7 +13,6 @@ public class Game extends JPanel implements KeyListener {
     private Renderer renderer;
     private InputHandler inputHandler;
     private SoundManager soundManager;
-    private BeatmapLoader beatmapLoader;
 
     private int score;
     private int combo;
@@ -29,8 +28,10 @@ public class Game extends JPanel implements KeyListener {
     }
 
     private void init() {
+        System.out.println( "Initializing game...");
         running = true;
         // Initialize components
+        System.out.println( "Initializing components...");
         tracks = new Track[4];
         for (int i = 0; i < 4; i++) {
             tracks[i] = new Track(i);
@@ -42,19 +43,16 @@ public class Game extends JPanel implements KeyListener {
         startTime = System.currentTimeMillis();
         score = 0;
         combo = 0;
-        beatmapLoader = new BeatmapLoader();
 
     }
 
     public void gameLoop() {
-        Game game = new Game();
         final int FPS = 60;
         final long OPTIMAL_TIME = 1000000000 / FPS;
 
         long lastLoopTime = System.nanoTime();
 
         while (running) {
-            beatmapLoader.loadBeatmapWithFileChooser(game);
             long now = System.nanoTime();
             long updateLength = now - lastLoopTime;
             lastLoopTime = now;

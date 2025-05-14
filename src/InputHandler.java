@@ -28,7 +28,7 @@ public class InputHandler {
         Track track = game.getTracks()[trackIndex];
         Note closestNote = track.getClosestNote();
 
-        if (closestNote != null && !closestNote.isHit()) {
+        if (closestNote != null && !closestNote.isHit(game)) {
             double distance = Math.abs(closestNote.getYPosition(game.getCurrentTime()) - 500); // 500 is hit position
 
             // Different scoring windows

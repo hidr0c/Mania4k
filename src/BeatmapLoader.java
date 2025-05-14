@@ -12,7 +12,7 @@ public class BeatmapLoader {
     // Hàm để chọn và load một beatmap file
     public Beatmap loadBeatmapWithFileChooser(Game game) {
         if (game == null) {
-            throw new IllegalArgumentException("Game instance cannot be null when loading beatmaps.");
+            System.out.println("Game instance cannot be null when loading beatmaps.");
         }
 
         JFileChooser fileChooser = new JFileChooser();
@@ -30,7 +30,7 @@ public class BeatmapLoader {
     // Load beatmap from a file
     public Beatmap loadBeatmap(String filename, Game game) {
         if (game == null) {
-            throw new IllegalArgumentException("Game instance cannot be null when loading beatmaps.");
+            System.out.println("Game instance cannot be null when loading beatmaps.");
         }
         Beatmap beatmap = new Beatmap();
 
@@ -57,9 +57,10 @@ public class BeatmapLoader {
                     inNotesSection = true;
                     continue;
                 }
-
+                System.out.println("reading metadata");
                 // Process metadata
                 if (inMetadataSection) {
+
                     String[] parts = line.split(":");
                     if (parts.length >= 2) {
                         String key = parts[0].trim();
@@ -93,7 +94,7 @@ public class BeatmapLoader {
                 if (inNotesSection) {
                     // Format: x,y,time,type,hitSound,[endTime or extras]
                     String[] parts = line.split(",");
-
+                    System.out.println("reading notes section");
                     if (parts.length >= 5) { // Ensure the minimum expected fields are present
                         try {
                             int x = Integer.parseInt(parts[0]); // x-coordinate (for osu!mania column)
@@ -106,12 +107,12 @@ public class BeatmapLoader {
                             if (type == 128 && parts.length >= 6) {
                                 endTime = Long.parseLong(parts[5].split(":")[0]); // Parse endTime
                             }
-                            int trackIndex = Math.min(x / 128, 3);  // Assume 4 tracks (0-3 for 4K)
-
-
+                            int trackIndex = Math.min((x - 64) / 128, 3);  // Assume 4 tracks (0-3 for 4K)
+                            System.out.println("creating note");
                             // Add note to beatmap
                             Note note = new Note(timestamp, x, type, endTime, game, trackIndex);  // Pass the Game instance
                             beatmap.addNote(note);
+                            System.out.println("complete creating note");
 
 
                             // Also add to game's tracks if applicable
@@ -124,7 +125,7 @@ public class BeatmapLoader {
                     }
                 }
             }
-
+            System.out.println("Complete reading beatmap");
             // Load audio file if exists
             if (beatmap.getAudioFilePath() != null) {
                 game.getSoundManager().playMusic(beatmap.getAudioFilePath());

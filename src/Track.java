@@ -9,6 +9,7 @@ public class Track {
     private Game game;
 
     public Track(int index) {
+        System.out.println("Creating track " + index);
         this.index = index;
         this.notes = new ArrayList<>();
         this.keyPressed = false;

@@ -9,23 +9,28 @@ public class Main {
             frame.setResizable(false);
 
             Game game = new Game();
-
+            System.out.println("Game created");
             frame.add(game);
             frame.pack();
             frame.setLocationRelativeTo(null);
             frame.setVisible(true);
             // Load the beatmap
             BeatmapLoader beatmapLoader = new BeatmapLoader();
-            
-            Beatmap beatmap = beatmapLoader.loadBeatmapWithFileChooser(game);
-            if (beatmap != null) {
-                System.out.println("Beatmap loaded successfully: " + beatmap.getTitle());
-            } else {
-                System.err.println("Failed to load beatmap!");
+            System.out.println("Loading beatmap");
+
+            try {
+                // Ensure game is correctly passed when selecting a beatmap
+                Beatmap beatmap = beatmapLoader.loadBeatmapWithFileChooser(game);
+                if (beatmap != null) {
+                    System.out.println("Beatmap loaded successfully: " + beatmap.getTitle());
+                } else {
+                    System.out.println("Failed to load beatmap!");
+                }
+            } catch (IllegalArgumentException e) {
+                System.err.println("Error: " + e.getMessage());
             }
-
-
             new Thread(game::gameLoop).start();
+
         });
     }
 }

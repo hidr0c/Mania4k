@@ -1,3 +1,5 @@
+import java.util.Objects;
+
 public class Note
 {
     private static final double SCROLL_SPEED = 0.5; // Adjust this based on your game’s scroll rateprivate void checkNoteHit(int trackIndex)
@@ -11,38 +13,40 @@ public class Note
     private int trackIndex;
 
     public Note(long timestamp, int x, int type, long endTime, Game game, int trackIndex) {
+        this.game = game;
         if (game == null) {
-            throw new IllegalArgumentException("Game instance cannot be null");
+            System.out.println("Game instance cannot be null");
         }
-
+        System.out.println("Note created");
         this.timestamp = timestamp;
         this.x = x;
         this.y = 192; // Fixed for osu!mania
         this.type = type;
         this.endTime = endTime; // 0 if not a hold note
         this.hit = false;
-        this.game = game;
+
         this.trackIndex = trackIndex;
     }
 
     /**
      * Access the track this note belongs to.
      */
-    public Track getTrack() {
-        if (trackIndex >= 0 && trackIndex < game.getTracks().length) {
+    public Track getTrack(Game game) {
+        System.out.println("Game instance:" + game);
+        if (trackIndex >= 0 && trackIndex < 4) {
             return game.getTracks()[trackIndex];
         } else {
             throw new IndexOutOfBoundsException("Invalid track index: " + trackIndex);
         }
     }
-    long currentTime = game.getCurrentTime(); // Assume your game class has a method to get current time
-    Note closestNote = getTrack().getClosestNote();
+    Note closestNote = getTrack(game).getClosestNote();
     public void checkHit(long currentTime) {
         if (!hit) {
             this.hit = true; // Mark the note as hit
         }
     }
-    public boolean isHit(){
+    public boolean isHit(Game game){
+        long currentTime = game.getCurrentTime();
         checkHit(currentTime);
         return hit;
     }
