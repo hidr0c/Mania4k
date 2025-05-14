@@ -8,11 +8,12 @@ public class Track {
     private boolean keyPressed;
     private Game game;
 
-    public Track(int index) {
+    public Track(int index, Game game) {
         System.out.println("Creating track " + index);
         this.index = index;
         this.notes = new ArrayList<>();
         this.keyPressed = false;
+        this.game = game;
     }
 
     public void update(long delta) {

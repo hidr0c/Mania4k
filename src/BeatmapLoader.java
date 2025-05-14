@@ -28,7 +28,7 @@ public class BeatmapLoader {
     }
 
     // Load beatmap from a file
-    public Beatmap loadBeatmap(String filename, Game game) {
+    public static Beatmap loadBeatmap(String filename, Game game) {
         if (game == null) {
             System.out.println("Game instance cannot be null when loading beatmaps.");
         }

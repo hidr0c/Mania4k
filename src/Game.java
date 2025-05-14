@@ -4,7 +4,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 public class Game extends JPanel implements KeyListener {
-    private static final int GAME_WIDTH = 400;
+    public static final int GAME_WIDTH = 400;
     private static final int GAME_HEIGHT = 600;
 
     private boolean running;
@@ -34,7 +34,7 @@ public class Game extends JPanel implements KeyListener {
         System.out.println( "Initializing components...");
         tracks = new Track[4];
         for (int i = 0; i < 4; i++) {
-            tracks[i] = new Track(i);
+            tracks[i] = new Track(i, this);
         }
         renderer = new Renderer(this);
         inputHandler = new InputHandler(this);

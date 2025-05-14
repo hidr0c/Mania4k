@@ -2,7 +2,7 @@ import java.util.Objects;
 
 public class Note
 {
-    private static final double SCROLL_SPEED = 0.5; // Adjust this based on your game’s scroll rateprivate void checkNoteHit(int trackIndex)
+    private static final double SCROLL_SPEED = 0.5; // Adjust this based on your game's scroll rate
     private long timestamp;
     private int x; // x position (column)
     private int y; // y position (always 192 for mania, but we'll store it)
@@ -39,7 +39,6 @@ public class Note
             throw new IndexOutOfBoundsException("Invalid track index: " + trackIndex);
         }
     }
-    Note closestNote = getTrack(game).getClosestNote();
     public void checkHit(long currentTime) {
         if (!hit) {
             this.hit = true; // Mark the note as hit
@@ -103,5 +102,13 @@ public class Note
             return (int) (192 - (SCROLL_SPEED * timeDifference));
         }
         return 192;
+    }
+
+    public Note getClosestNote() {
+        if (game != null) {
+            return getTrack(game).getClosestNote();
+        } else {
+            throw new IllegalStateException("Game instance is null in Note");
+        }
     }
 }

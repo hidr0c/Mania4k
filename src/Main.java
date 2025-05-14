@@ -15,21 +15,24 @@ public class Main {
             frame.setLocationRelativeTo(null);
             frame.setVisible(true);
             // Load the beatmap
-            BeatmapLoader beatmapLoader = new BeatmapLoader();
-            System.out.println("Loading beatmap");
-
+            Beatmap beatmap = null;
             try {
-                // Ensure game is correctly passed when selecting a beatmap
-                Beatmap beatmap = beatmapLoader.loadBeatmapWithFileChooser(game);
-                if (beatmap != null) {
-                    System.out.println("Beatmap loaded successfully: " + beatmap.getTitle());
-                } else {
-                    System.out.println("Failed to load beatmap!");
+                beatmap = BeatmapLoader.loadBeatmap("D:/Code Projects/Mania 4k/assets/beatmaps/sample.txt", game);
+                System.out.println("Beatmap loaded successfully: " + beatmap.getTitle());
+                try {
+                    Thread.sleep(3000); // 3 seconds delay
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
-            } catch (IllegalArgumentException e) {
-                System.err.println("Error: " + e.getMessage());
+            } catch (Exception e) {
+                System.err.println("Failed to load beatmap!");
+                e.printStackTrace();
             }
             new Thread(game::gameLoop).start();
+
+            game.setFocusable(true);
+            game.requestFocusInWindow();
+            game.addKeyListener(game);
 
         });
     }

@@ -24,25 +24,24 @@ public class Renderer
             int x = 20 + i * (TRACK_WIDTH + TRACK_SPACING);
 
             // Draw track background
-             //g.setColor(Color.DARK_GRAY);
+            //g.setColor(Color.DARK_GRAY);
             //g.fillRect(x, 0, TRACK_WIDTH, 600);
-
 
             g.setColor(Color.WHITE);
             int diameter = TRACK_WIDTH;
             g.drawOval(x, HIT_POSITION_Y - diameter / 2, diameter, diameter);
 
-
             if (tracks[i].isKeyPressed()) {
                 g.setColor(Color.CYAN);
-                 diameter = TRACK_WIDTH;
+                diameter = TRACK_WIDTH;
                 int centerX = x + TRACK_WIDTH / 2;
                 int centerY = HIT_POSITION_Y;
                 g.fillOval(centerX - diameter / 2, centerY - diameter / 2, diameter, diameter);
             }
 
-            // Draw notes
-            for (Note note : tracks[i].getNotes()) {
+            // Draw notes (make a copy to avoid ConcurrentModificationException)
+            java.util.List<Note> notesCopy = new java.util.ArrayList<>(tracks[i].getNotes());
+            for (Note note : notesCopy) {
                 drawNote(g, note, x);
             }
         }
@@ -94,18 +93,16 @@ public class Renderer
             g.setColor(Color.BLACK);
             g.drawRect(trackX, Math.min(noteY, holdEndY), TRACK_WIDTH, Math.abs(holdEndY - noteY));
         } else {
-            // Render normal note as a rectangle
-            g.setColor(Color.YELLOW); // Yellow for normal notes
-            g.fillRect(trackX, noteY - 10, TRACK_WIDTH, 20);
+            // Render normal note as a white circle
+            g.setColor(Color.WHITE);
+            int diameter = TRACK_WIDTH - 10;
+            int centerX = trackX + TRACK_WIDTH / 2;
+            int centerY = noteY;
+            g.fillOval(centerX - diameter / 2, centerY - diameter / 2, diameter, diameter);
 
             // Outline for the normal note
             g.setColor(Color.BLACK);
-            g.drawRect(trackX, noteY - 10, TRACK_WIDTH, 20);
+            g.drawOval(centerX - diameter / 2, centerY - diameter / 2, diameter, diameter);
         }
-        g.setColor(Color.YELLOW);
-        g.fillRect(trackX, noteY - 10, TRACK_WIDTH, 20);
-
-        g.setColor(Color.BLACK);
-        g.drawRect(trackX, noteY - 10, TRACK_WIDTH, 20);
     }
 }
